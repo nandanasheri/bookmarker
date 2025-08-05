@@ -1,0 +1,10 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "server for bookmarking app"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.1.1",
+    "pinecone>=7.3.0",
+]
