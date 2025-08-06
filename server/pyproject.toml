@@ -5,6 +5,9 @@ description = "server for bookmarking app"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "beautifulsoup4>=4.13.4",
     "flask>=3.1.1",
     "pinecone>=7.3.0",
+    "playwright>=1.54.0",
+    "python-dotenv>=1.1.1",
 ]
