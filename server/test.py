@@ -22,7 +22,7 @@ def js_scrape():
         page = context.new_page()
 
         # go to url
-        page.goto("https://v1.nandana.dev")
+        page.goto("https://github.com/nandanasheri")
         # get HTML
         return page.content()
 
@@ -37,5 +37,5 @@ def chunk_text(content):
     
     print(soup.get_text())
     
-text = plain_html_scrape()
+text = js_scrape()
 chunk_text(text)
