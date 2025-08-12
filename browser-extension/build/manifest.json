@@ -3,8 +3,18 @@
   "name": "Bookmark Chrome Extension",
   "version": "1.0.0",
   "description": "Chrome Extension for Managing Bookmarks",
+  "permissions": [
+      "activeTab",
+      "scripting"
+    ],
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_title": "Bookmark this Page"
   },
-  "permissions": []
+   "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content.js"]
+    }
+  ]
 }
