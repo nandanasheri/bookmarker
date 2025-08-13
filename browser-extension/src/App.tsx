@@ -3,21 +3,19 @@ function App() {
 
   function getPageInfo() {
 
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const tabId = tabs[0].id;
-    
-    if (chrome.runtime.lastError) {
-      console.error(chrome.runtime.lastError.message);
-      return;
-    }
+    (async () => {
+      const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
 
-    // Send message to content script
-    if (tabId !== undefined) {
-      chrome.tabs.sendMessage(tabId, { type: "GET_PAGE_DATA" }, (response) => {
-        console.log("Page info from content.ts:", response);
-      });
-    }
-  });
+      // sends message to content script
+      if (tab.id !== undefined) {
+        const response = await chrome.tabs.sendMessage(tab.id, {type: "GET_PAGE_DATA"});
+        // do something with response here, not outside the function
+        console.log(response);
+
+        // call our API!
+      }
+    })();
+
 }
 
   return (
