@@ -29,20 +29,20 @@ def js_scrape():
 
 def chunk_text(text):
     # divide text into chunk sizes
-    chunk_size = 256
+    CHUNK_SIZE = 100
     all_tokens = text.split()
     i = 0
     all_chunks = []
 
     while i < len(all_tokens):
         each_chunk = []
-        if len(all_tokens) - i >= chunk_size:
-            each_chunk = all_tokens[i:i+256]
+        if len(all_tokens) - i >= CHUNK_SIZE:
+            each_chunk = all_tokens[i:i+CHUNK_SIZE]
         else:
             each_chunk = all_tokens[i:]
         all_chunks.append(" ".join(each_chunk))
         # add an overlap to retain semantic meaning
-        i += chunk_size - 50
+        i += CHUNK_SIZE - 25
 
     return all_chunks
 
@@ -64,9 +64,9 @@ def HTMLtoText(json_body):
     text = re.sub(r"\s+", " ", text)
     text = text.strip()
 
-    all_chunks.append(json_body["title"])
     all_chunks = chunk_text(text)
-    all_chunks.append(json_body["notes"])
+    all_chunks.append(json_body["title"])
+    # all_chunks.append(json_body["notes"])
 
     return all_chunks
 

@@ -3,8 +3,9 @@ from pinecone import Pinecone
 import os
 from dotenv import load_dotenv
 import uuid
-from utils import chunk_text
+from utils import HTMLtoText
 from datetime import datetime, timezone
+import time
 
 app = Flask(__name__)
 
@@ -35,36 +36,43 @@ def add_bookmark():
     content_type = request.headers.get('Content-Type')
     created_at = datetime.now(timezone.utc).isoformat()
 
-    if (content_type == 'application/json'):
-        json = request.json
-        result = chunk_text(json["body"])
+    if content_type == "application/json":
+        req_body = request.get_json()
+        result = HTMLtoText(req_body)
         dense_index = pc.Index("dense-bookmarks")
         records = []
         i = 0
         document_id = str(uuid.uuid4())
 
-        for each in result["chunks"]:
+        for each in result:
+            print(each)
             each_chunk = {}
             each_chunk["_id"] = f"{document_id}#chunk{i}"
             each_chunk["chunk_text"] = each
-            each_chunk["title"] = json["title"]
-            each_chunk["url"] = json["url"]
-            each_chunk["tags"] = json["tags"]
+            each_chunk["title"] = req_body["title"]
+            each_chunk["url"] = req_body["url"]
+            each_chunk["tags"] = []
             each_chunk["created_at"] = created_at
             i += 1
             records.append(each_chunk)
-
-        # Upsert the records into a namespace
-        dense_index.upsert_records("bookmarks-namespace", records)
-        return 201, {"document_id": document_id, "url": result['url']}
+        
+        # Batch requests to send to pinecone only 20 at a time - avoid rate limits
+        BATCH_SIZE = 20
+        for start in range(0, len(records), BATCH_SIZE):
+            batch = records[start:start+BATCH_SIZE]
+            dense_index.upsert_records("bookmarks-namespace", batch)
+            time.sleep(5)  
+        
+        return jsonify({"document_id": document_id, "url": req_body['url']}), 200
     
     else:
-        return 400, {}
+        return jsonify({}), 400
+
 
 ''' 
     * @route GET /search 
     * @desc Semantic Search to Pinecone DB
-    * @inputExample  -- GET http://localhost:5000/search?q=tech websites of SWE&t=portfolios, SWE
+    * @inputExample  -- GET http://localhost:5000/search?q=jobs websites of SWE&t=portfolios, SWE
     * @outputExample  -- {}
   '''
 @app.route("/search", methods=["GET"])
@@ -89,12 +97,12 @@ def search_bookmarks():
         query=query,
         rerank={
         "model": "bge-reranker-v2-m3",
-        "top_n": 8,         # rerank and return only the most relevant documents
+        "top_n": 10,         # rerank and return only the most relevant documents
         "rank_fields": ["chunk_text"]
         }
     )
-    print(results)
-    return jsonify(results, status=200, mimetype='application/json')
+    # using to_dict() because Pinecone result isn't JSON serializable because it's a QueryResponse Object
+    return results.to_dict()
     
 @app.route("/")
 def main():

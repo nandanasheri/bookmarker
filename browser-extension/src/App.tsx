@@ -2,7 +2,7 @@
 function App() {
 
   function postPageInfo() {
-    // const url = "http://127.0.0.1:5000/add";
+    const url = "http://127.0.0.1:5000/add";
 
     (async () => {
       const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
@@ -14,19 +14,23 @@ function App() {
         console.log(web_page_content);
 
         // POST request to add a bookmark with these contents
-        // try {
-        //   const response = await fetch(url, {
-        //     method: "POST",
-        //     body: web_page_content,
-        //   });
-        //   if (!response.ok) {
-        //     throw new Error(`Response status: ${response.status}`);
-        //   }
-        //   const result = await response.json();
-        //   console.log(result);
-        // } catch (error : any) {
-        //   console.error(error.message);
-        // }
+        try {
+          const response = await fetch(url, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify(web_page_content),
+          });
+          if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+          }
+          const result = await response.json();
+          console.log(result);
+        } catch (error : any) {
+          console.error(error.message);
+        }
       }
     })();
 
