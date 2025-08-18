@@ -1,3 +1,14 @@
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+import logo from "./assets/bookmark.png"
+
 
 function App() {
 
@@ -38,9 +49,40 @@ function App() {
 
   return (
     <>
-      <h2>Bookmark this Page</h2>
-      <input type="text" id="title" placeholder="Enter Notes" />
-      <button id="bookmarkPage" onClick={postPageInfo}>Bookmark this Page</button>
+      <div className="bg-neutral-900 w-[350px] h-[300px] px-7 py-6 rounded-4xl">
+        <div className="flex gap-3 mb-3 text-offwhite">
+          <img src={logo} alt="bookmark_logo" width={40}></img>
+          <h1 className="pb-2 text-3xl font-semibold tracking-tight">Keepr</h1>
+        </div>
+        <div className="border-t mb-6 mx-3"/>
+
+        <div className="flex gap-6 mb-10 justify-center">
+          <Button id="tags" className="bg-offwhite text-red-accent hover:text-offwhite ">Add Tags + </Button>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button id="tags" className="bg-offwhite text-red-accent hover:text-offwhite ">Add Notes + </Button>
+
+            </PopoverTrigger>
+            <PopoverContent className="w-60">
+              <div className="flex flex-col gap-4">
+              <Input
+                id="notes"
+                placeholder="Add Notes here"
+                className="h-8 w-full"
+              />
+              <Button className="w-fit">Save</Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+                
+        </div>
+        <div className="flex justify-center">
+          <Button id="bookmarkPage" variant="destructive" className="bg-red-accent text-lg" onClick={postPageInfo}>Bookmark this Page</Button>
+        </div>
+
+        
+      </div>
     </>
   )
 }
