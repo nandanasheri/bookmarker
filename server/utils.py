@@ -66,7 +66,7 @@ def HTMLtoText(json_body):
 
     all_chunks = chunk_text(text)
     all_chunks.append(json_body["title"])
-    # all_chunks.append(json_body["notes"])
+    all_chunks.append(json_body["notes"])
 
     return all_chunks
 

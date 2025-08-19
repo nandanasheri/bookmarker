@@ -7,10 +7,12 @@ import {
 } from "@/components/ui/popover"
 
 import logo from "./assets/bookmark.png"
+import { useState } from "react"
 
 
 function App() {
-
+  const [notes, setNotes] = useState("")
+ 
   function postPageInfo() {
     const url = "http://127.0.0.1:5000/add";
 
@@ -20,9 +22,8 @@ function App() {
       // sends message to content script
       if (tab.id !== undefined) {
         const web_page_content = await chrome.tabs.sendMessage(tab.id, {type: "GET_PAGE_DATA"});
-        // do something with response here
+        web_page_content["notes"] = notes
         console.log(web_page_content);
-
         // POST request to add a bookmark with these contents
         try {
           const response = await fetch(url, {
@@ -48,7 +49,7 @@ function App() {
 
   return (
     <>
-      <div className="bg-neutral-900 w-[350px] h-[300px] px-7 py-6 rounded-4xl">
+      <div className="bg-neutral-900 w-[350px] h-[300px] px-7 py-6">
         <div className="flex gap-3 mb-3 text-offwhite">
           <img src={logo} alt="bookmark_logo" width={40}></img>
           <h1 className="pb-2 text-3xl font-semibold tracking-tight">Keepr</h1>
@@ -69,8 +70,9 @@ function App() {
                 id="notes"
                 placeholder="Add Notes here"
                 className="h-8 w-full"
+                onChange={(e) => setNotes(e.target.value)}
               />
-              <Button className="w-fit">Save</Button>
+
               </div>
             </PopoverContent>
           </Popover>
