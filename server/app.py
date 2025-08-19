@@ -6,6 +6,7 @@ import uuid
 from utils import HTMLtoText
 from datetime import datetime, timezone
 import time
+from supabase import create_client, Client
 
 app = Flask(__name__)
 
@@ -61,8 +62,14 @@ def add_bookmark():
         for start in range(0, len(records), BATCH_SIZE):
             batch = records[start:start+BATCH_SIZE]
             dense_index.upsert_records("bookmarks-namespace", batch)
-            time.sleep(5)  
-        
+            time.sleep(5)
+
+        response = (
+            supabase.table("bookmarks")
+            .insert({"url": req_body["url"], "title": req_body["title"], "notes": req_body["notes"], "created_at": created_at})
+            .execute()
+        )
+
         return jsonify({"document_id": document_id, "url": req_body['url']}), 200
     
     else:
@@ -116,3 +123,8 @@ pinecone_api = os.getenv("PINECONE_API_KEY")
 # Pinecone client initialization
 pc = Pinecone(api_key=pinecone_api)
 create_dense_index()
+
+# Supabase client initialization
+url: str = os.getenv("SUPABASE_URL")
+key: str = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(url, key)
